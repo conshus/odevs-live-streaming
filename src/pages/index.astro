@@ -2,16 +2,34 @@
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
 
-const indexResponse = await fetch(
+const response = await fetch(
 	`${Astro.url.origin}/.netlify/functions/get_settings`,
 );
-const settings = await indexResponse.json();
+const settings = await response.json();
 console.log("data: ", settings);
+const events = settings.events;
+events.sort((a, b) => a.timeInMs - b.timeInMs);
 ---
 
 <Layout title="Welcome to our events.">
 	<main>
-		<section id="events-container"></section>
+		<section id="events-container">
+			{
+				events.map((event) => (
+					<div>
+						{event.title}
+						<br />
+						<dwane-timer timer-deadline="{event.timeInMs}" />
+						<details>
+							<summary>Description</summary>
+							{event.description}
+						</details>
+						<br />
+						<a href="/{event.timeInMs}">Join</a>
+					</div>
+				))
+			}
+		</section>
 	</main>
 </Layout>
 
