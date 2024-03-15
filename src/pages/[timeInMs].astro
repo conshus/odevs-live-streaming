@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 
 const { timeInMs } = Astro.params;
 const response = await fetch(
-    Astro.url.origin + "/.netlify/functions/get_settings"
+    Astro.url.origin + "/.netlify/functions/get_settings",
 );
 const data = await response.json();
 const eventData = data.events.filter((event) => event.timeInMs == timeInMs);
@@ -20,7 +20,7 @@ const tokensResponse = await fetch(
             // 'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: JSON.stringify({ sessionId, role: "subscriber" }),
-    }
+    },
 );
 const tokensData = await tokensResponse.json();
 console.log("tokensData: ", tokensData);
@@ -69,6 +69,11 @@ const { videoToken } = tokensData;
             </div>
         </div>
     </section>
+    <dialog id="welcome-dialog">
+        <h1>Welcome!</h1>
+        <p>Remember, be kind.</p>
+        <button>Got it.</button>
+    </dialog>
 </Layout>
 
 <script>
@@ -86,11 +91,26 @@ const { videoToken } = tokensData;
 </script>
 
 <script is:inline>
+console.log("document.referrer: ", document.referrer);
+console.log("document.URL: ", document.URL);
+console.log("window.location.hostname: ", window.location.hostname);
 const sectionEl = document.querySelector("section");
+
+const sessionId = sectionEl.dataset.sessionId;
+const applicationId = sectionEl.dataset.applicationId;
+const conversationId = sectionEl.dataset.conversationId;
+const videoToken = sectionEl.dataset.videoToken;
+console.log("sectionEl.dataset.videoToken: ", sectionEl.dataset.videoToken);
+console.log("sectionEl.dataset.sessionId: ", sectionEl.dataset.sessionId);
+console.log(
+    "sectionEl.dataset.applicationId: ",
+    sectionEl.dataset.applicationId,
+);
+
 // const videoSubscribersEl = document.querySelector('video-subscribers');
 // const videoPublisherEl = document.querySelector('video-publisher');
 const videoSubscriberContainer = document.querySelector(
-    "#video-subscriber-container"
+    "#video-subscriber-container",
 );
 const screenContainer = document.querySelector("#screen-container");
 const cameraContainer = document.querySelector("#camera-container");
@@ -124,26 +144,29 @@ async function postData(url = "", data = {}) {
     return response.json(); // parses JSON response into native JavaScript objects
 }
 
-window.addEventListener("load", () => {
-    // console.log("videoSubscribersEl: ", videoSubscribersEl);
-    // videoSubscribersEl.style.display = "block";
-    const sessionId = sectionEl.dataset.sessionId;
-    const applicationId = sectionEl.dataset.applicationId;
-    const conversationId = sectionEl.dataset.conversationId;
-    const videoToken = sectionEl.dataset.videoToken;
-    console.log(
-        "sectionEl.dataset.videoToken: ",
-        sectionEl.dataset.videoToken
+function updateDisplay(signal) {
+    const display = signal.display.toLowerCase() === "true" ? true : false;
+    console.log("display: ", display);
+    // const subscribers = document.querySelectorAll('video-subscriber');
+    // console.log("subscribers: ", subscribers);
+    // for (const subscriber of subscribers) {
+    //     if (subscriber.id === signal.id){
+    //         console.log("subscriber found: ", subscriber.id);
+    //         subscriber.subscribeToAudio(display);
+    //         subscriber.style.display = display ? "block" : "none";
+    //     }
+    // }
+    const selectedSubscriber = document.querySelector(
+        `[id="${signal.id}"]`,
     );
-    console.log(
-        "sectionEl.dataset.sessionId: ",
-        sectionEl.dataset.sessionId
-    );
-    console.log(
-        "sectionEl.dataset.applicationId: ",
-        sectionEl.dataset.applicationId
-    );
-    // Initialize an OpenTok Session object
+    if (selectedSubscriber) {
+        selectedSubscriber.subscribeToAudio(display);
+        selectedSubscriber.style.display = display ? "block" : "none";
+    }
+}
+
+function initializeVonage() {
+    // Initialize a Vonage Video Session object
     const session = OT.initSession(applicationId, sessionId);
     console.log("session: ", session);
     // videoPublisherEl.session = session;
@@ -174,7 +197,7 @@ window.addEventListener("load", () => {
                 document.createElement("video-subscriber");
             videoSubscriberEl.setAttribute(
                 "id",
-                `${event.stream.streamId}`
+                `${event.stream.streamId}`,
             );
             videoSubscriberEl.session = session;
             videoSubscriberEl.stream = event.stream;
@@ -196,7 +219,7 @@ window.addEventListener("load", () => {
                 document.createElement("video-subscriber");
             videoSubscriberEl.setAttribute(
                 "id",
-                `${event.stream.streamId}`
+                `${event.stream.streamId}`,
             );
             videoSubscriberEl.session = session;
             videoSubscriberEl.stream = event.stream;
@@ -209,7 +232,7 @@ window.addEventListener("load", () => {
 
             cameraContainer.appendChild(videoSubscriberEl);
             const selectedSubscriber = document.querySelector(
-                `[id="${event.stream.streamId}"]`
+                `[id="${event.stream.streamId}"]`,
             );
             console.log("selectedSubscriber: ", selectedSubscriber);
             selectedSubscriber.addEventListener("subscribed", (event) => {
@@ -220,28 +243,6 @@ window.addEventListener("load", () => {
             // selectedSubscriber.subscribeToAudio(false);
         }
     });
-
-    function updateDisplay(signal) {
-        const display =
-            signal.display.toLowerCase() === "true" ? true : false;
-        console.log("display: ", display);
-        // const subscribers = document.querySelectorAll('video-subscriber');
-        // console.log("subscribers: ", subscribers);
-        // for (const subscriber of subscribers) {
-        //     if (subscriber.id === signal.id){
-        //         console.log("subscriber found: ", subscriber.id);
-        //         subscriber.subscribeToAudio(display);
-        //         subscriber.style.display = display ? "block" : "none";
-        //     }
-        // }
-        const selectedSubscriber = document.querySelector(
-            `[id="${signal.id}"]`
-        );
-        if (selectedSubscriber) {
-            selectedSubscriber.subscribeToAudio(display);
-            selectedSubscriber.style.display = display ? "block" : "none";
-        }
-    }
 
     session.on("signal:toggle-display", (event) => {
         console.log("got signal data: ", JSON.parse(event.data));
@@ -290,7 +291,7 @@ window.addEventListener("load", () => {
             // Log into chat
             const chatData = await postData(
                 `/.netlify/functions/join_chat`,
-                { name: nameInput.value, conversationId }
+                { name: nameInput.value, conversationId },
             );
             console.log("chatData: ", chatData);
             const { chatToken } = chatData;
@@ -298,7 +299,7 @@ window.addEventListener("load", () => {
 
             client = new NexmoClient({ debug: false });
             app = await client.createSession(chatToken);
-            conversation = await app.getConversation(conversationId);
+            const conversation = await app.getConversation(conversationId);
 
             console.log("conversation: ", conversation);
 
@@ -320,6 +321,35 @@ window.addEventListener("load", () => {
             });
         }
     });
+}
+
+window.addEventListener("load", () => {
+    console.log(
+        "from a page on the site? ",
+        document.referrer.includes(window.location.hostname),
+    );
+    // Browsers don't allow for autoplay videos with audio if you have not interacted with the site yet,
+    // so the participants in the video may look frozen. This will check if the person clicked from a page
+    // on the site or came directly here through a link or something.
+    if (document.referrer.includes(window.location.hostname)) {
+        initializeVonage();
+    } else {
+        const welcomeDialog = document.querySelector("#welcome-dialog");
+        const welcomeDialogBtn = welcomeDialog.querySelector("button");
+
+        welcomeDialog.showModal();
+
+        welcomeDialog.addEventListener("keydown", (event) => {
+            if (event.keyCode === 27) {
+                initializeVonage();
+            }
+        });
+
+        welcomeDialogBtn.addEventListener("click", () => {
+            welcomeDialog.close();
+            initializeVonage();
+        });
+    }
 });
 </script>
 
@@ -329,6 +359,10 @@ window.addEventListener("load", () => {
     }
     video-subscribers {
         display: none;
+    }
+
+    dialog {
+        text-align: center;
     }
 
     #scene {
