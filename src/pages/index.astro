@@ -2,11 +2,11 @@
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
 
-// const indexResponse = await fetch(
-// 	`${Astro.url.origin}/.netlify/functions/get_settings`,
-// );
-// const settings = await indexResponse.json();
-// console.log("data: ", settings);
+const indexResponse = await fetch(
+	`${Astro.url.origin}/.netlify/functions/get_settings`,
+);
+const settings = await indexResponse.json();
+console.log("data: ", settings);
 ---
 
 <Layout title="Welcome to our events.">
@@ -38,19 +38,19 @@ function loadEvents() {
 	});
 }
 
-(async function () {
-	try {
-		// get settings file
-		const settingsResponse = await fetch(
-			`/.netlify/functions/get_settings`,
-		);
-		settings = await settingsResponse.json();
-		events = settings.events;
-		loadEvents();
-	} catch (error) {
-		console.error(error);
-	}
-})();
+// (async function () {
+// 	try {
+// 		// get settings file
+// 		const settingsResponse = await fetch(
+// 			`/.netlify/functions/get_settings`,
+// 		);
+// 		settings = await settingsResponse.json();
+// 		events = settings.events;
+// 		loadEvents();
+// 	} catch (error) {
+// 		console.error(error);
+// 	}
+// })();
 </script>
 
 <style>
