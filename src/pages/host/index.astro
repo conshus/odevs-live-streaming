@@ -1,0 +1,54 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+---
+<Layout title="Host site">
+
+      <h1>Host page</h1>
+      <section id="events-container"></section>
+</Layout>
+
+<script>
+	// import '@vonage/video-publisher/video-publisher.js';
+	// import '@vonage/video-subscriber/video-subscriber.js';
+	// import '@vonage/video-subscribers/video-subscribers.js';
+	// import '@vonage/screen-share/screen-share.js';
+	import '@lifelongdev/dwane-timer/dwane-timer.js';
+
+</script>
+
+<script is:inline>
+
+	let settings = {};
+	let events = [];
+
+	function loadSettings(){
+		console.log("loadSettings!");
+	}
+	function loadEvents(){
+        console.log("loadEvents: ",events);
+        const eventsContainer = document.querySelector("#events-container");
+        eventsContainer.innerHTML = "";
+        events.sort((a, b) => a.timeInMs - b.timeInMs);
+        events.map(event => {
+			eventsContainer.innerHTML += `${event.title}
+			<br/><dwane-timer timer-deadline="${event.timeInMs}"></dwane-timer>
+			<a href="/host/${event.timeInMs}">Join</a><br/><br/>`;
+        });
+	}
+
+	(async function() {
+		try {
+            // get settings file
+            const settingsResponse = await fetch(`/.netlify/functions/get_settings`);
+            settings = await settingsResponse.json();
+            console.log("settings: ", settings);
+            loadSettings();
+            events = settings.events;
+            console.log("events: ", events);
+            loadEvents();
+		} catch(error){
+            console.error(error);
+        }
+	})();
+</script>

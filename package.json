@@ -12,6 +12,22 @@
   },
   "dependencies": {
     "@astrojs/netlify": "^5.1.3",
-    "astro": "^4.5.4"
+    "@lifelongdev/dwane-timer": "^0.x",
+    "@octokit/core": "^4.2.0",
+    "@vonage/client-sdk-video": "^2.27.2",
+    "@vonage/inputs-select": "^0.x",
+    "@vonage/screen-share": "^0.x",
+    "@vonage/server-client": "^1.2.0",
+    "@vonage/server-sdk": "^3.2.0",
+    "@vonage/vc-members": "^1.x",
+    "@vonage/vc-messages": "^1.x",
+    "@vonage/vc-text-input": "^1.x",
+    "@vonage/vc-typing-indicator": "^1.x",
+    "@vonage/video": "^1.15.2",
+    "@vonage/video-publisher": "^0.x",
+    "@vonage/video-subscriber": "^0.x",
+    "@vonage/video-subscribers": "^0.x",
+    "astro": "^4.5.4",
+    "nexmo-client": "^9.2.3"
   }
 }
