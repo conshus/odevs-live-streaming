@@ -18,17 +18,6 @@ const { title } = Astro.props;
 			is:inline
 			src="https://unpkg.com/@vonage/client-sdk-video@2/dist/js/opentok.js"
 		></script>
-		<!-- <script is:inline src="https://static.opentok.com/v2/js/opentok.min.js"></script> -->
-		<!-- <script src="https://unpkg.com/@lifelongdev/dwane-timer@latest/dwane-timer.js?module" type="module"></script> -->
-		<!-- Load Web Components-->
-		<!-- <script is:inline type="module" src="https://unpkg.com/@vonage/video-publisher@latest/video-publisher.js?module"></script> -->
-		<!-- <script is:inline type="module" src="https://unpkg.com/@wcd/conshus.litelementjs-l8ergcsm@latest/dist/index.js?module"></script> -->
-		<!-- <script is:inline type="module" src="https://unpkg.com/@vonage/video-subscribers@latest/video-subscribers.js?module"></script> -->
-		<!-- <script is:inline type="module" src="https://unpkg.com/@vonage/screen-share@latest/screen-share.js?module"></script> -->
-		<!-- <script is:inline type="module" src="https://unpkg.com/@wcd/conshus.litelementjs-lblbd1ij@latest/dist/index.js?module"></script> -->
-		<!-- <script is:inline type="module" src="https://unpkg.com/@vonage/video-subscriber@latest/video-subscriber.js?module"></script> -->
-		<!-- <script is:inline type="module" src="https://unpkg.com/@wcd/conshus.litelementjs-ld2686o1@latest/dist/index.js?module"></script> -->
-		<!-- <script is:inline type="module" src="https://unpkg.com/@vonage/inputs-select@latest/inputs-select.js?module"></script> -->
 
 		<!-- chat Web Components -->
 		<script
@@ -37,30 +26,12 @@ const { title } = Astro.props;
 			src="https://unpkg.com/nexmo-client@latest/dist/nexmoClient.js?module"
 		></script>
 
-		<!-- <script is:inline type="module" src="https://unpkg.com/@vonage/vc-text-input@latest/vc-text-input.js?module"></script> -->
-		<!-- <script is:inline type="module" src="https://unpkg.com/@vonage/vc-typing-indicator@latest/vc-typing-indicator.js?module"></script> -->
-		<!-- <script is:inline type="module" src="https://unpkg.com/@vonage/vc-members@latest/vc-members.js?module"></script> -->
-		<!-- <script is:inline type="module" src="https://unpkg.com/@vonage/vc-messages@latest/vc-messages.js?module"></script> -->
-
 		<title>{title}</title>
 	</head>
 	<body>
 		<slot />
 	</body>
 </html>
-
-<!-- <script>
-	// import '@vonage/video-publisher/video-publisher.js';
-	// import '@vonage/video-subscriber/video-subscriber.js';
-	// import '@vonage/video-subscribers/video-subscribers.js';
-	// import '@vonage/screen-share/screen-share.js';
-	import '@lifelongdev/dwane-timer/dwane-timer.js';
-
-</script> -->
-<!-- <script is:inline src="../node_modules/@vonage/video-client/dist/js/opentok.min.js"></script> -->
-<!-- <script is:inline src="../node_modules/nexmo-client/dist/nexmoClient.js"></script> -->
-<!-- <script is:inline src="/js/opentok.js"></script> -->
-<!-- <script is:inline src="/nexmoClient.js"></script> -->
 
 <style is:global>
 	:root {
@@ -77,8 +48,15 @@ const { title } = Astro.props;
 		background-color: #f6f6f6;
 	}
 	code {
-		font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-			DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+		font-family:
+			Menlo,
+			Monaco,
+			Lucida Console,
+			Liberation Mono,
+			DejaVu Sans Mono,
+			Bitstream Vera Sans Mono,
+			Courier New,
+			monospace;
 	}
 	#dashboard {
 		display: none;
@@ -86,7 +64,6 @@ const { title } = Astro.props;
 	video-subscriber::part(container) {
 		aspect-ratio: 16 / 9;
 	}
-
 	#video-subscriber-container {
 		display: flex;
 		justify-content: center;
@@ -95,31 +72,18 @@ const { title } = Astro.props;
 		height: 90vh;
 		position: relative;
 	}
-
-	/* #subscribers-section {
-		display: flex;
-	    justify-content: center;
-	    align-items: center;
-		width: 80vw;
-        height: 90vh;
-        position: relative;
-
-	} */
 	#camera-container {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
 		place-items: center;
 		width: 100%;
 	}
-
 	#screen-container {
 		width: 0;
 	}
-
 	#screen-container:has(> video-subscriber) {
 		width: 100%;
 	}
-
 	#screen-container:has(> video-subscriber) + #camera-container {
 		display: block;
 		width: 30%;

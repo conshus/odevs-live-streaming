@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 
 const { timeInMs } = Astro.params;
+console.log("timeInMs: ", timeInMs);
 const response = await fetch(
     Astro.url.origin + "/.netlify/functions/get_settings",
 );
