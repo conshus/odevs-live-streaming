@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
 
 const response = await fetch(
-	`${Astro.url.origin}/.netlify/functions/get_settings`,
+	Astro.url.origin + "/.netlify/functions/get_settings"
 );
 const settings = await response.json();
 console.log("data: ", settings);
@@ -19,13 +19,12 @@ events.sort((a, b) => a.timeInMs - b.timeInMs);
 					<div>
 						{event.title}
 						<br />
-						<dwane-timer timer-deadline="{event.timeInMs}" />
+						<dwane-timer timer-deadline={event.timeInMs} />
 						<details>
 							<summary>Description</summary>
 							{event.description}
 						</details>
-						<br />
-						<a href="/{event.timeInMs}">Join</a>
+						<a href=`/${event.timeInMs}`>Join</a>
 					</div>
 				))
 			}
