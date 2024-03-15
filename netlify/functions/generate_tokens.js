@@ -20,21 +20,12 @@ exports.handler = async (event, context) => {
   vonage.video = video;
 
   const params = JSON.parse(event.body);
-  console.log("params: ", params);
   const sessionId = params.sessionId;
   const role = params.role.toLowerCase();
 
   try {
-    // const session = await vonage.video.createSession({ mediaMode:"routed" });
-
     // generate token
     const videoToken = vonage.video.generateClientToken(sessionId, { role });
-    // res.setHeader('Content-Type', 'application/json');
-    // res.send({
-    //   applicationId: appId,
-    //   sessionId: session.sessionId,
-    //   token: token
-    // });
     return {
       statusCode: 200,
       body: JSON.stringify({ videoToken }),

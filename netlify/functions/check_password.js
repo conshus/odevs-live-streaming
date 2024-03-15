@@ -7,7 +7,6 @@ exports.handler = async (event, context) => {
   }
 
   const params = JSON.parse(event.body);
-  console.log("params: ", params);
   const password = params.password;
   const role = params.role.toLowerCase();
   let authorized = false;

@@ -20,7 +20,6 @@ exports.handler = async (event, context) => {
   vonage.video = video;
 
   const params = JSON.parse(event.body);
-  console.log("params: ", params);
   const archiveId = params.archiveId;
   const broadcastId = params.broadcastId;
   const ecId = params.ecId;
@@ -28,13 +27,12 @@ exports.handler = async (event, context) => {
   try {
     // stop Archive
     const archive = await vonage.video.stopArchive(archiveId);
-    console.log("archive: ", archive);
-    // stop Broadcast
-    const broadcast = await vonage.video.stopBroadcast(broadcastId);
-    console.log("broadcast: ", broadcast);
+    if (broadcastId !== "no-rtmp-outputs") {
+      // stop Broadcast
+      const broadcast = await vonage.video.stopBroadcast(broadcastId);
+    }
     // stop Experience Composer render
     const ec = await vonage.video.stopExperienceComposerRender(ecId);
-    console.log("ec: ", ec);
 
     return {
       statusCode: 200,

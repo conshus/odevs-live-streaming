@@ -20,31 +20,14 @@ exports.handler = async (event, context) => {
   vonage.video = video;
 
   const params = JSON.parse(event.body);
-  //   console.log("params: ", params);
-  //   const sessionId = params.sessionId;
-  //   const role = params.role.toLowerCase();
-  console.log("got webhook event: ", params);
-  //   console.log("got webhook event status: ", event.body.status);
   if (params.status === "available") {
     try {
       // send signal
-      console.log("got archive available event: ", params);
       const sessionId = params.sessionId;
       await vonage.video.sendSignal(
         { type: "downloadAvailable", data: params.url },
         sessionId,
       );
-      //   console.log("Successfully sent signal:", signalResponse);
-      // const session = await vonage.video.createSession({ mediaMode:"routed" });
-
-      // generate token
-      //   const videoToken = vonage.video.generateClientToken(sessionId, { role });
-      // res.setHeader('Content-Type', 'application/json');
-      // res.send({
-      //   applicationId: appId,
-      //   sessionId: session.sessionId,
-      //   token: token
-      // });
       return {
         statusCode: 200,
         body: JSON.stringify({ status: "success" }),

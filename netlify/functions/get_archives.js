@@ -1,9 +1,6 @@
 const { VONAGE_APP_ID, VONAGE_PRIVATE_KEY64 } = process.env;
 import { Vonage } from "@vonage/server-sdk";
 import { Auth } from "@vonage/auth";
-import { tokenGenerate } from "@vonage/jwt";
-
-// import { Video } from "@vonage/video";
 import { Client, AuthenticationType } from "@vonage/server-client";
 
 const privateKey = Buffer.from(VONAGE_PRIVATE_KEY64, "base64");
@@ -14,15 +11,13 @@ const credentials = {
 };
 
 const vonage = new Vonage(credentials);
-// const video = new Video(credentials);
-// vonage.video = video;
 
 // initialize client to make Conversation API calls
 const vonageClient = new Client(new Auth(credentials));
 vonageClient.authType = AuthenticationType.JWT;
 
 exports.handler = async (event, context) => {
-  // Only allow POST
+  // Only allow GET
   if (event.httpMethod !== "GET") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
@@ -32,7 +27,6 @@ exports.handler = async (event, context) => {
     const archives = await vonageClient.sendGetRequest(
       `https://video.api.vonage.com/v2/project/${applicationId}/archive`,
     );
-    console.log("archives: ", archives);
     return {
       statusCode: 200,
       body: JSON.stringify(archives.data.items),

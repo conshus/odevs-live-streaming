@@ -9,8 +9,6 @@ exports.handler = async (event, context) => {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
-  console.log("save_settings!!!", SITE_ID);
-
   const userResponse = await fetch("https://api.netlify.com/api/v1/user", {
     method: "get",
     headers: {
@@ -23,7 +21,6 @@ exports.handler = async (event, context) => {
     },
   });
   const data = await userResponse.json();
-  console.log("data: ", data);
 
   const siteResponse = await fetch(
     `https://api.netlify.com/api/v1/sites/${SITE_ID}`,
@@ -32,31 +29,19 @@ exports.handler = async (event, context) => {
       headers: {
         "Content-Type": "application/json",
         // "User-Agent": "MyApp (YOUR_NAME@EXAMPLE.COM)",
-        // 'Authorization': 'Bearer ' + "QX27v2jCdNZlAamPQaru1u0JjDF440uF-EgWUlnlBlA"
         Authorization: "Bearer " + NETLIFY_PAT,
-        // 'Authorization': 'Bearer ' + "Zr20wX4I6jleYD61COTHLvZWdCfjFxQy8-NyVTnIFBk"
         // 'Content-Type': 'application/x-www-form-urlencoded',
       },
     },
   );
 
-  console.log();
   const siteData = await siteResponse.json();
-  console.log("siteData: ", siteData.build_settings.repo_path);
   const githubRepo = siteData.build_settings.repo_path.split(
     `${data.slug}/`,
   )[1];
-  console.log("githubRepo: ", githubRepo);
 
   // Authorized
-  console.log("convert data to base64");
-  // const base64newSettings = Buffer.from(JSON.stringify(newSettings)).toString('base64');
-  // console.log("event.body: ", event.body);
   const base64newSettings = Buffer.from(event.body).toString("base64");
-
-  // console.log("base64newSettings: ", base64newSettings);
-
-  console.log("get settings file");
   const originalFile = await octokit.request(
     "GET /repos/{owner}/{repo}/contents/{path}",
     {
@@ -68,11 +53,10 @@ exports.handler = async (event, context) => {
       },
     },
   );
-  console.log("originalFile: ", originalFile);
-  console.log("get sha");
+
   const originalFileSHA = originalFile.data.sha;
 
-  console.log("update file with new data");
+  // update file with new data
   await octokit.request("PUT /repos/{owner}/{repo}/contents/{path}", {
     owner: data.slug,
     repo: githubRepo,

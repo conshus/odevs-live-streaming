@@ -5,11 +5,6 @@ import { Video } from "@vonage/video";
 import { Client, AuthenticationType } from "@vonage/server-client";
 
 exports.handler = async (event, context) => {
-  // // Only allow POST
-  // if (event.httpMethod !== "POST") {
-  // return { statusCode: 405, body: "Method Not Allowed" };
-  // }
-
   const privateKey = Buffer.from(VONAGE_PRIVATE_KEY64, "base64");
   const applicationId = VONAGE_APP_ID;
   const credentials = {
@@ -31,16 +26,7 @@ exports.handler = async (event, context) => {
       "https://api.nexmo.com/v0.3/conversations",
       {},
     );
-    console.log("conversation: ", conversation);
 
-    // generate token
-    // token = vonage.video.generateClientToken(session.sessionId);
-    // res.setHeader('Content-Type', 'application/json');
-    // res.send({
-    //   applicationId: appId,
-    //   sessionId: session.sessionId,
-    //   token: token
-    // });
     return {
       statusCode: 200,
       body: JSON.stringify({
