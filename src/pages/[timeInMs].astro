@@ -2,14 +2,12 @@
 import Layout from "../layouts/Layout.astro";
 
 const { timeInMs } = Astro.params;
-console.log("timeInMs: ", timeInMs);
 const response = await fetch(
     Astro.url.origin + "/.netlify/functions/get_settings",
 );
 const data = await response.json();
 const eventData = data.events.filter((event) => event.timeInMs == timeInMs);
 if (eventData.length === 0) return Astro.redirect("/");
-console.log("eventData: ", eventData);
 const { applicationId, sessionId, conversationId } = eventData[0];
 
 const tokensResponse = await fetch(
@@ -24,7 +22,6 @@ const tokensResponse = await fetch(
     },
 );
 const tokensData = await tokensResponse.json();
-console.log("tokensData: ", tokensData);
 const { videoToken } = tokensData;
 ---
 
@@ -37,9 +34,6 @@ const { videoToken } = tokensData;
         data-application-id={applicationId}
         data-conversation-id={conversationId}
     >
-        <!-- <video-publisher width="300px" height="240px"></video-publisher> -->
-
-        <!-- <video-subscribers></video-subscribers> -->
         <div id="video-subscriber-container">
             <div id="scene">
                 <div>
@@ -59,7 +53,6 @@ const { videoToken } = tokensData;
                 <div id="login-status"></div>
             </div>
             <div id="chat-application">
-                <!-- <vc-members></vc-members> -->
                 <div id="chat-section">
                     <vc-messages></vc-messages>
                     <div>
@@ -77,42 +70,103 @@ const { videoToken } = tokensData;
     </dialog>
 </Layout>
 
-<script>
-    // import '@vonage/video-client@latest/dist/js/opentok.js';
-    // import '@vonage/video-publisher/video-publisher.js';
-    import "@vonage/video-subscriber/video-subscriber.js";
-    // import '@vonage/video-subscribers/video-subscribers.js';
-    // import '@vonage/screen-share/screen-share.js';
-    // import '@lifelongdev/dwane-timer/dwane-timer.js';
+<style>
+    section {
+        display: flex;
+    }
+    dialog {
+        text-align: center;
+    }
+    #scene {
+        display: none;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        background-color: white;
+        z-index: 20;
+        text-align: center;
+    }
+    #chat-application {
+        display: none;
+        align-items: flex-start;
+        justify-content: space-between;
+        width: 100%;
+    }
+    vc-messages {
+        height: 300px;
+    }
+    vc-text-input {
+        font-size: 20px;
+    }
+    #video-subscriber-container {
+        width: 80vw;
+        height: 90vh;
+        display: flex;
+    }
 
-    import "@vonage/vc-members/vc-members.js";
+    #screen-container {
+        height: 0;
+        padding-bottom: 56.25%;
+    }
+
+    video {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+    }
+
+    .OT_subscriber {
+        aspect-ratio: 16 / 9;
+    }
+
+    video-subscriber::part(container) {
+        aspect-ratio: 16 / 9;
+    }
+
+    #video-subscriber-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80vw;
+        height: 90vh;
+        position: relative;
+    }
+
+    #camera-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+        place-items: center;
+        width: 100%;
+    }
+
+    #screen-container {
+        width: 0;
+    }
+
+    #screen-container:has(> video-subscriber) {
+        width: 100%;
+    }
+
+    #screen-container:has(> video-subscriber) + #camera-container {
+        display: block;
+        width: 30%;
+    }
+</style>
+
+<script>
+    import "@vonage/video-subscriber/video-subscriber.js";
     import "@vonage/vc-messages/vc-messages.js";
     import "@vonage/vc-typing-indicator/vc-typing-indicator";
     import "@vonage/vc-text-input/vc-text-input.js";
 </script>
 
 <script is:inline>
-console.log("document.referrer: ", document.referrer);
-console.log("document.URL: ", document.URL);
-console.log("window.location.hostname: ", window.location.hostname);
 const sectionEl = document.querySelector("section");
-
 const sessionId = sectionEl.dataset.sessionId;
 const applicationId = sectionEl.dataset.applicationId;
 const conversationId = sectionEl.dataset.conversationId;
 const videoToken = sectionEl.dataset.videoToken;
-console.log("sectionEl.dataset.videoToken: ", sectionEl.dataset.videoToken);
-console.log("sectionEl.dataset.sessionId: ", sectionEl.dataset.sessionId);
-console.log(
-    "sectionEl.dataset.applicationId: ",
-    sectionEl.dataset.applicationId,
-);
-
-// const videoSubscribersEl = document.querySelector('video-subscribers');
-// const videoPublisherEl = document.querySelector('video-publisher');
-const videoSubscriberContainer = document.querySelector(
-    "#video-subscriber-container",
-);
 const screenContainer = document.querySelector("#screen-container");
 const cameraContainer = document.querySelector("#camera-container");
 
@@ -124,7 +178,6 @@ const submitBtn = document.querySelector("#submit");
 const loginStatus = document.querySelector("#login-status");
 const vonageInput = document.querySelector("vc-text-input");
 const vonageTypingIndicator = document.querySelector("vc-typing-indicator");
-const vonageMembers = document.querySelector("vc-members");
 const vonageMessagesFeed = document.querySelector("vc-messages");
 
 async function postData(url = "", data = {}) {
@@ -147,16 +200,6 @@ async function postData(url = "", data = {}) {
 
 function updateDisplay(signal) {
     const display = signal.display.toLowerCase() === "true" ? true : false;
-    console.log("display: ", display);
-    // const subscribers = document.querySelectorAll('video-subscriber');
-    // console.log("subscribers: ", subscribers);
-    // for (const subscriber of subscribers) {
-    //     if (subscriber.id === signal.id){
-    //         console.log("subscriber found: ", subscriber.id);
-    //         subscriber.subscribeToAudio(display);
-    //         subscriber.style.display = display ? "block" : "none";
-    //     }
-    // }
     const selectedSubscriber = document.querySelector(
         `[id="${signal.id}"]`,
     );
@@ -169,26 +212,13 @@ function updateDisplay(signal) {
 function initializeVonage() {
     // Initialize a Vonage Video Session object
     const session = OT.initSession(applicationId, sessionId);
-    console.log("session: ", session);
-    // videoPublisherEl.session = session;
-    // videoPublisherEl.token = videoToken;
-
-    // videoSubscribersEl.session = session;
-    // videoSubscribersEl.token = videoToken;
-    // videoSubscriberContainer.style.display = "block";
-    console.log("does the code get to here?");
-
     session.connect(videoToken, function (error) {
         if (error) {
-            console.log(error.message);
-        } else {
-            // You have connected to the session. You could publish a stream now.
-            console.log("session connected!");
+            console.error(error.message);
         }
     });
 
     session.on("streamCreated", function (event) {
-        console.log("streamCreated!!", event);
         // check to see if event.stream.videoType is camera or screen
         if (
             event.stream.videoType === "screen" ||
@@ -202,19 +232,12 @@ function initializeVonage() {
             );
             videoSubscriberEl.session = session;
             videoSubscriberEl.stream = event.stream;
-            // videoSubscriberEl.width = "100%";
-            // videoSubscriberEl.height = "100%";
             videoSubscriberEl.properties = {
                 width: "100%",
                 height: "100%",
                 showControls: false,
             };
-            // videoSubscriberEl.style.display = "none";
-            // videoSubscriberEl.style.setProperty("aspect-ratio", "16 / 9");
-            // videoSubscriberEl.style.setProperty("width", "100%");
             screenContainer.appendChild(videoSubscriberEl);
-            // console.log("OT_subscriber: ", document.querySelector(`#${event.stream.streamId}`));
-            // console.log("OT_subscriber: ", document.querySelector(`#${event.stream.streamId}`).shadowRoot.querySelector(".OT_subscriber"));
         } else {
             const videoSubscriberEl =
                 document.createElement("video-subscriber");
@@ -229,52 +252,28 @@ function initializeVonage() {
                 height: "100%",
             };
             videoSubscriberEl.style.display = "none";
-            // videoSubscriberEl.subscribeToAudio(false);
 
             cameraContainer.appendChild(videoSubscriberEl);
             const selectedSubscriber = document.querySelector(
                 `[id="${event.stream.streamId}"]`,
             );
-            console.log("selectedSubscriber: ", selectedSubscriber);
             selectedSubscriber.addEventListener("subscribed", (event) => {
-                console.log("subscriber: ", event);
                 event.detail.subscriber.subscribeToAudio(false);
-                // selectedSubscriber.subscribeToAudio(false);
             });
-            // selectedSubscriber.subscribeToAudio(false);
         }
     });
 
     session.on("signal:toggle-display", (event) => {
-        console.log("got signal data: ", JSON.parse(event.data));
         const signal = JSON.parse(event.data);
         updateDisplay(signal);
-        // console.log("got signal data: ", JSON.parse(event.data));
-        // const signal = JSON.parse(event.data);
-        // const display = signal.display.toLowerCase() === "true" ? true : false;
-        // console.log("display: ", display);
-        // // const subscribers = document.querySelectorAll('video-subscriber');
-        // // console.log("subscribers: ", subscribers);
-        // // for (const subscriber of subscribers) {
-        // //     if (subscriber.id === signal.id){
-        // //         console.log("subscriber found: ", subscriber.id);
-        // //         subscriber.subscribeToAudio(display);
-        // //         subscriber.style.display = display ? "block" : "none";
-        // //     }
-        // // }
-        // const selectedSubscriber = document.querySelector(`[id="${signal.id}"]`);
-        // selectedSubscriber.subscribeToAudio(display);
-        // selectedSubscriber.style.display = display ? "block" : "none";
     });
+
     session.on("signal:update-displays", (event) => {
-        console.log("signal:update-displays: ", event);
-        console.log("JSON.parse: ", JSON.parse(event.data));
         const signalArray = JSON.parse(event.data);
         signalArray.forEach((signal) => updateDisplay(signal));
-        // updateDisplay(event);
     });
+
     session.on("signal:update-scene", (event) => {
-        console.log("signal:update-scene: ", event.data);
         const sceneEl = document.querySelector("#scene");
         const sceneStatus = document.querySelector("#scene-status");
         if (event.data === "") {
@@ -287,26 +286,20 @@ function initializeVonage() {
 
     submitBtn.addEventListener("click", async () => {
         if (nameInput.value.replaceAll(" ", "") !== "") {
-            console.log("nameInput.value: ", nameInput.value);
             loginStatus.textContent = "logging in...";
             // Log into chat
             const chatData = await postData(
                 `/.netlify/functions/join_chat`,
                 { name: nameInput.value, conversationId },
             );
-            console.log("chatData: ", chatData);
             const { chatToken } = chatData;
-            console.log("chatToken: ", chatToken);
 
             client = new NexmoClient({ debug: false });
             app = await client.createSession(chatToken);
             const conversation = await app.getConversation(conversationId);
 
-            console.log("conversation: ", conversation);
-
             vonageInput.conversation = conversation;
             vonageTypingIndicator.conversation = conversation;
-            // vonageMembers.conversation = conversation;
             vonageMessagesFeed.conversation = conversation;
 
             chatLogin.style.display = "none";
@@ -325,10 +318,6 @@ function initializeVonage() {
 }
 
 window.addEventListener("load", () => {
-    console.log(
-        "from a page on the site? ",
-        document.referrer.includes(window.location.hostname),
-    );
     // Browsers don't allow for autoplay videos with audio if you have not interacted with the site yet,
     // so the participants in the video may look frozen. This will check if the person clicked from a page
     // on the site or came directly here through a link or something.
@@ -353,102 +342,3 @@ window.addEventListener("load", () => {
     }
 });
 </script>
-
-<style>
-    section {
-        display: flex;
-    }
-    video-subscribers {
-        display: none;
-    }
-
-    dialog {
-        text-align: center;
-    }
-
-    #scene {
-        display: none;
-        /* display: flex; */
-        width: 100%;
-        height: 100%;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        background-color: white;
-        z-index: 20;
-        text-align: center;
-    }
-
-    #chat-application {
-        display: none;
-        align-items: flex-start;
-        justify-content: space-between;
-        width: 100%;
-    }
-
-    vc-messages {
-        height: 300px;
-    }
-
-    vc-members {
-        height: 300px;
-        width: 100%;
-        max-width: 200px;
-    }
-
-    vc-text-input {
-        font-size: 20px;
-    }
-    /* #video-subscriber-container {
-        width: 80vw;
-        height: 90vh;
-        display: flex;
-    } */
-
-    /* #screen-container { */
-    /* height: 0;
-        padding-bottom: 56.25%; */
-    /* } */
-
-    /* video {
-        width: 100%;
-        aspect-ratio: 16 / 9;
-    } */
-
-    /* .OT_subscriber {
-        aspect-ratio: 16 / 9;
-    }
-
-    video-subscriber::part(container) {
-		aspect-ratio: 16 / 9;
-	}
-
-	#video-subscriber-container {
-		display: flex;
-	    justify-content: center;
-	    align-items: center;
-        width: 80vw;
-        height: 90vh;
-        position: relative;
-	}
-
-	#camera-container {
-		display: grid;
-  		grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  		place-items: center;
-		width: 100%;
-	}
-
-	#screen-container {
-		width: 0;
-	}
-
-	#screen-container:has(> video-subscriber) {
-		width: 100%;
-	}
-
-	#screen-container:has(> video-subscriber) + #camera-container {
-		display: block;
-		width: 30%;
-	} */
-</style>

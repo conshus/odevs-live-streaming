@@ -43,35 +43,38 @@ const { title } = Astro.props;
 		margin: 0;
 		box-sizing: border-box;
 	}
-	h1:
-	#dashboard {
-		display: none;
+	h1 {
+		margin: 0;
+		padding: 0;
 	}
-	video-subscriber::part(container) {
-		aspect-ratio: 16 / 9;
-	}
-	#video-subscriber-container {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		width: 80vw;
-		height: 90vh;
-		position: relative;
-	}
-	#camera-container {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-		place-items: center;
-		width: 100%;
-	}
-	#screen-container {
-		width: 0;
-	}
-	#screen-container:has(> video-subscriber) {
-		width: 100%;
-	}
-	#screen-container:has(> video-subscriber) + #camera-container {
-		display: block;
-		width: 30%;
-	}
+	// #dashboard {
+	// 	display: none;
+	// }
+	// video-subscriber::part(container) {
+	// 	aspect-ratio: 16 / 9;
+	// }
+	// #video-subscriber-container {
+	// 	display: flex;
+	// 	justify-content: center;
+	// 	align-items: center;
+	// 	width: 80vw;
+	// 	height: 90vh;
+	// 	position: relative;
+	// }
+	// #camera-container {
+	// 	display: grid;
+	// 	grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+	// 	place-items: center;
+	// 	width: 100%;
+	// }
+	// #screen-container {
+	// 	width: 0;
+	// }
+	// #screen-container:has(> video-subscriber) {
+	// 	width: 100%;
+	// }
+	// #screen-container:has(> video-subscriber) + #camera-container {
+	// 	display: block;
+	// 	width: 30%;
+	// }
 </style>
