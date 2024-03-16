@@ -15,7 +15,7 @@ const conversationId = eventData[0].conversationId;
 
 <Layout title="Guest">
     <main>
-        <h1><a href={Astro.url.origin+"/guest"}> &lt;</a>Guest Dashboard</h1>
+        <h1><a href={Astro.url.origin + "/guest"}> &lt;</a>Guest Dashboard</h1>
         <section
             data-session-id={sessionId}
             data-application-id={applicationId}
@@ -108,6 +108,10 @@ const conversationId = eventData[0].conversationId;
 
     section {
         width: 100%;
+    }
+
+    #publisher-section {
+        max-width: 300px;
     }
 
     #chat-application {

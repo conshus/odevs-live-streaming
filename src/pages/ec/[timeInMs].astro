@@ -76,11 +76,6 @@ const { videoToken } = tokensData;
         text-align: center;
     }
 
-    /* #screen-container { */
-    /* height: 0;
-        padding-bottom: 56.25%; */
-    /* } */
-
     video {
         width: 100%;
         aspect-ratio: 16 / 9;
@@ -99,6 +94,7 @@ const { videoToken } = tokensData;
         grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
         place-items: center;
         width: 100%;
+        aspect-ratio: 16 / 9;
     }
 
     #screen-container {
@@ -107,6 +103,7 @@ const { videoToken } = tokensData;
 
     #screen-container:has(> video-subscriber) {
         width: 100%;
+        aspect-ratio: 16 / 9;
     }
 
     #screen-container:has(> video-subscriber) + #camera-container {
@@ -175,6 +172,7 @@ window.addEventListener("load", () => {
                 height: "100%",
                 showControls: false,
             };
+            videoSubscriberEl.style.display = "block";
             screenContainer.appendChild(videoSubscriberEl);
         } else {
             const videoSubscriberEl =

@@ -16,7 +16,7 @@ const conversationId = eventData[0].conversationId;
 
 <Layout title="Host">
     <main>
-        <h1><a href={Astro.url.origin+"/host"}> &lt;</a> Host Dashboard</h1>
+        <h1><a href={Astro.url.origin + "/host"}> &lt;</a> Host Dashboard</h1>
         <h2>{eventTitle}</h2>
         <section
             data-timeInMs={timeInMs}
@@ -140,6 +140,10 @@ const conversationId = eventData[0].conversationId;
 
     section {
         width: 100%;
+    }
+
+    #publisher-section {
+        max-width: 300px;
     }
 
     #chat-application {
@@ -619,5 +623,5 @@ stopArchive.addEventListener("click", async () => {
     } catch (error) {
         console.error("Error stopping archive: ", error);
     }
-    });
+});
 </script>
