@@ -1,11 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
-const linksExpire = Date.now() + 600000;
 ---
 
 <Layout title="Admin">
     <main>
-        <h1>Admin</h1>
+        <h1><a href={Astro.url.origin}> &lt;</a> Admin</h1>
         <section>
             <div id="login">
                 <label for="pass">Enter password:</label><br />
@@ -81,7 +80,7 @@ const linksExpire = Date.now() + 600000;
                 />
                 <label for="env-admin">ADMIN_PASSWORD</label>
             </summary>
-            Link to Netlify section to set envionment variable
+             Link to Netlify section to set envionment variable
         </details>
         <details>
             <summary>
@@ -93,14 +92,14 @@ const linksExpire = Date.now() + 600000;
                 />
                 <label for="env-guest">GUEST_PASSWORD</label>
             </summary>
-            Link to Netlify section to set envionment variable
+             Link to Netlify section to set envionment variable
         </details>
         <details>
             <summary>
                 <input type="checkbox" id="env-host" name="env-host" disabled />
                 <label for="env-host">HOST_PASSWORD</label>
             </summary>
-            Link to Netlify section to set envionment variable
+             Link to Netlify section to set envionment variable
         </details>
         <details>
             <summary>
@@ -112,7 +111,7 @@ const linksExpire = Date.now() + 600000;
                 />
                 <label for="env-vonage-app">VONAGE_APP_ID</label>
             </summary>
-            Link to Netlify section to set envionment variable
+             Link to Netlify section to set envionment variable
         </details>
         <details>
             <summary>
@@ -124,8 +123,8 @@ const linksExpire = Date.now() + 600000;
                 />
                 <label for="env-vonage-key">VONAGE_PRIVATE_KEY64</label>
             </summary>
-            Link to Netlify section to set envionment variable and allow upload of
-            private key
+             Link to Netlify section to set envionment variable and allow upload
+            of private key
             <br /><input type="file" id="private-key-input" />
             <br /><textarea
                 id="key-textarea"
@@ -143,7 +142,7 @@ const linksExpire = Date.now() + 600000;
                 />
                 <label for="env-github">GITHUB_PAT</label>
             </summary>
-            Link to Netlify section to set envionment variable
+             Link to Netlify section to set envionment variable
         </details>
         <details>
             <summary>
@@ -155,18 +154,36 @@ const linksExpire = Date.now() + 600000;
                 />
                 <label for="env-netlify">NETLIFY_PAT</label>
             </summary>
-            Link to Netlify section to set envionment variable
+             Link to Netlify section to set envionment variable
         </details>
         <div id="test"></div>
     </template>
 </Layout>
+
+<style>
+    #login {
+        display: grid;
+        place-items: center;
+        place-content: center;
+        height: 80dvh;
+    }
+    #dashboard {
+        display: none;
+        justify-content: center;
+    }
+
+    #links-expire {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+    }
+</style>
 
 <script>
     import "@lifelongdev/dwane-timer/dwane-timer.js";
 </script>
 
 <script is:inline>
-console.log("works!");
 const passwordInput = document.querySelector("#pass");
 const submitBtn = document.querySelector("#submit");
 
@@ -197,36 +214,18 @@ function handleDateTimeChange() {
             ? "0" + Math.abs(timezoneHr)
             : Math.abs(timezoneHr)
         }${timezoneMin === 0 ? "00" : Math.abs(timezoneMin)}`;
-    console.log("handleDateTimeChange: ", datetimeInput.value);
-    // console.log("next_session_input: ",next_session_input);
-    console.log(`${datetimeInput.value} GMT${timezoneString}`);
     const newDate = new Date(`${datetimeInput.value}${timezoneString}`);
-    // console.log({ newDate });
     timeInMs = Date.parse(newDate);
-    console.log({ timeInMs });
-    console.log(new Date(timeInMs).toLocaleString());
-    console.log(
-        "datetimeSplit: ",
-        datetimeInput.value.split("T")[0].split("-")
-    );
-    const datetimeSplit = datetimeInput.value.split("T")[0].split("-");
-    console.log("yearMonth: ", `${datetimeSplit[0]}-${datetimeSplit[1]}`);
-    yearMonth = `${datetimeSplit[0]}-${datetimeSplit[1]}`;
-    // dispatch('datetimechange', {
-    //     datetimeMs: timeInMs
-    // });
 }
 
 async function handleAddEvent() {
-    console.log("add event!");
     if (title.value !== "" && description.value !== "" && timeInMs) {
         try {
             eventStatus.textContent = "generating credentials...";
             const credsResponse = await fetch(
-                `/.netlify/functions/generate_creds`
+                `/.netlify/functions/generate_creds`,
             );
             const credsJSON = await credsResponse.json();
-            console.log("credsJSON: ", credsJSON);
             eventStatus.textContent = "saving event...";
             const eventToAdd = {
                 title: title.value,
@@ -236,17 +235,14 @@ async function handleAddEvent() {
                 sessionId: credsJSON.sessionId,
                 conversationId: credsJSON.conversationId,
             };
-            console.log("eventToSave: ", eventToAdd);
 
             settings.events = settings.events
                 ? [...settings.events, eventToAdd]
                 : [eventToAdd];
-            console.log("settings: ", settings);
             const saveSettingsJSON = await postData(
                 `/.netlify/functions/save_settings`,
-                settings
+                settings,
             );
-            console.log("saveSettingsJSON: ", saveSettingsJSON);
             events = settings.events;
             eventStatus.textContent = "successfully saved!";
             title.value = "";
@@ -256,58 +252,36 @@ async function handleAddEvent() {
             }, 1000);
 
             loadEvents();
-
-            // get credentials
-            // console.log("sumbitPassword", passwordInput.value);
-            // // status = "saving settings";
-            // const dataToSend = {
-            //     password: passwordInput.value,
-            //     role: 'admin'
-            // }
-            // const loginResponse = await postData(`/.netlify/functions/check_password`, dataToSend);
-            // // status = "settings saved successfully"
-            // console.log("loginResponse: ", loginResponse);
-            // if (loginResponse.authorized){
-            //     document.querySelector("#login").style.display = "none";
-            //     loadDashboard();
-            // }
         } catch (error) {
             // status = error;
-            console.error(error);
+            console.error("Error adding event:", error);
             eventStatus.textContent = error.toString();
         }
     }
 }
 
 async function handleDeleteEvent() {
-    console.log("delete event!");
     const eventsToDelete = document.querySelectorAll(
-        "input[name=event]:checked"
+        "input[name=event]:checked",
     );
-    console.log("eventsToDelete: ", eventsToDelete);
     let eventsPending = events;
     if (eventsToDelete.length > 0) {
-        console.log("start deleting");
         deleteEventBtn.disabled = true;
         eventStatus.textContent = `deleting event${eventsToDelete.length > 1 ? "s" : ""
             }`;
         eventsToDelete.forEach((eventToDelete) => {
-            console.log("eventToDelete: ", eventToDelete);
             const foundIndex = eventsPending.findIndex(
-                (event) => event.timeInMs === parseInt(eventToDelete.value)
+                (event) => event.timeInMs === parseInt(eventToDelete.value),
             );
             eventsPending.splice(foundIndex, 1);
         });
-        console.log("events: ", events);
         settings.events = eventsPending;
-        console.log("settings: ", settings);
 
         try {
             const saveSettingsJSON = await postData(
                 `/.netlify/functions/save_settings`,
-                settings
+                settings,
             );
-            console.log("saveSettingsJSON: ", saveSettingsJSON);
             eventStatus.textContent = "successfully deleted!";
             setTimeout(() => {
                 eventStatus.textContent = "";
@@ -315,47 +289,11 @@ async function handleDeleteEvent() {
             events = settings.events;
             loadEvents();
         } catch (error) {
-            // status = error;
-            console.error(error);
+            console.error("Error deleting event(s):", error);
             eventStatus.textContent = error.toString();
         }
         deleteEventBtn.disabled = false;
     }
-    // if (title.value !== "" && description.value !== "" && timeInMs){
-    //     try {
-    //         eventStatus.textContent = "generating credentials...";
-    //         const credsResponse = await fetch(`/.netlify/functions/generate_creds`);
-    //         const credsJSON = await credsResponse.json();
-    //         console.log("credsJSON: ", credsJSON);
-    //         eventStatus.textContent = "saving event...";
-    //         const eventToAdd = {
-    //             title: title.value,
-    //             description: description.value,
-    //             timeInMs,
-    //             applicationId: credsJSON.applicationId,
-    //             sessionId: credsJSON.sessionId
-    //         }
-    //         console.log("eventToSave: ", eventToAdd);
-
-    //         settings.events = settings.events ? [...settings.events, eventToAdd] : [eventToAdd];
-    //         events = settings.events;
-    //         console.log("settings: ", settings);
-    //         const saveSettingsJSON = await postData(`/.netlify/functions/save_settings`, settings);
-    //         console.log("saveSettingsJSON: ", saveSettingsJSON);
-    //         eventStatus.textContent = "successfully saved!";
-    //         setTimeout(() => {
-    //             eventStatus.textContent = "";
-    //         }, 1000)
-
-    //         loadEvents();
-
-    //     } catch (error) {
-    //         // status = error;
-    //         console.error(error);
-    //         eventStatus.textContent = error.toString();
-    //     }
-
-    // }
 }
 
 datetimeInput.addEventListener("change", handleDateTimeChange, false);
@@ -392,7 +330,6 @@ function handleFiles(event, callback) {
 }
 
 function loadEvents() {
-    console.log("loadEvents: ", events);
     const pastEvents = document.querySelector("#past-events");
     const upcomingEvents = document.querySelector("#upcoming-events");
     pastEvents.innerHTML = "";
@@ -400,7 +337,6 @@ function loadEvents() {
     events.sort((a, b) => a.timeInMs - b.timeInMs);
     events.map((event) => {
         if (event.timeInMs > Date.now()) {
-            console.log("upcoming event");
             upcomingEvents.innerHTML += `
                 <input type="checkbox" value=${event.timeInMs} name="event">${event.title}<br/>
                 <details>
@@ -408,7 +344,6 @@ function loadEvents() {
                     ${event.description}
                 </details>`;
         } else {
-            console.log("past event");
             pastEvents.innerHTML += `
                 <input type="checkbox" value=${event.timeInMs} name="event">${event.title}<br/>
                 <details>
@@ -420,7 +355,6 @@ function loadEvents() {
 }
 
 function loadArchives() {
-    console.log("loadArchives: ", archives);
     const linksExpireSpan = document.querySelector("#links-expire");
     let availableCount = 0;
     archives.map((archive) => {
@@ -444,31 +378,26 @@ function loadArchives() {
 }
 
 async function loadDashboard() {
-    console.log("load dashboard!");
     document.querySelector("#dashboard").style.display = "flex";
     try {
         // get settings file
         const settingsResponse = await fetch(
-            `/.netlify/functions/get_settings`
+            `/.netlify/functions/get_settings`,
         );
         settings = await settingsResponse.json();
-        console.log("settings: ", settings);
         events = settings.events;
-        console.log("events: ", events);
         loadEvents();
 
         // get archives
         const archivesResponse = await fetch(
-            `/.netlify/functions/get_archives`
+            `/.netlify/functions/get_archives`,
         );
         archives = await archivesResponse.json();
-        console.log("archives: ", archives);
         loadArchives();
 
         // get env
         const envResponse = await fetch(`/.netlify/functions/check_env`);
         const envSet = await envResponse.json();
-        console.log("envSet: ", envSet);
         const envSection = document.querySelector("#env-section");
         const envTemplate = document.querySelector("#env-template");
         const envClone = envTemplate.content.cloneNode(true);
@@ -498,13 +427,12 @@ async function loadDashboard() {
                         key;
                 });
             },
-            false
+            false,
         );
 
         // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Interact_with_the_clipboard#using_execcommand
         const copyButton = document.querySelector("#copy-button");
         copyButton.addEventListener("click", () => {
-            console.log("copy click!");
             let keyText = document.querySelector("#key-textarea");
             keyText.select();
             document.execCommand("copy");
@@ -521,35 +449,23 @@ async function loadDashboard() {
 async function submitPassword() {
     if (passwordInput.value !== "") {
         try {
-            console.log("sumbitPassword", passwordInput.value);
-            // status = "saving settings";
             const dataToSend = {
                 password: passwordInput.value,
                 role: "admin",
             };
             const loginResponse = await postData(
                 `/.netlify/functions/check_password`,
-                dataToSend
+                dataToSend,
             );
-            // status = "settings saved successfully"
-            console.log("loginResponse: ", loginResponse);
             if (loginResponse.authorized) {
                 document.querySelector("#login").style.display = "none";
                 loadDashboard();
             }
         } catch (error) {
-            // status = error;
+            console.error("Error logging in: ", error);
+        }
         }
     }
-}
 
-submitBtn.addEventListener("click", submitPassword, false);
+    submitBtn.addEventListener("click", submitPassword, false);
 </script>
-
-<style>
-    #links-expire {
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-    }
-</style>

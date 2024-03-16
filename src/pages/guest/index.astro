@@ -1,54 +1,42 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-
+import Layout from "../../layouts/Layout.astro";
+const response = await fetch(
+	Astro.url.origin + "/.netlify/functions/get_settings",
+);
+const settings = await response.json();
+const events = settings.events;
+events.sort((a, b) => a.timeInMs - b.timeInMs);
 ---
+
 <Layout title="Guest site">
-
-      <h1>Guest page</h1>
-      <section id="events-container"></section>
-
+	<h1><a href={Astro.url.origin}> &lt;</a>Guest page</h1>
+	<main>
+		<section id="events-container">
+			{
+				events.map((event) => (
+					<div>
+						{event.title}
+						<br />
+						<dwane-timer timer-deadline={event.timeInMs} />
+						<a href=`/guest/${event.timeInMs}`>Join</a>
+						<br /><br />
+					</div>
+				))
+			}
+		</section>
+	</main>
 </Layout>
 <script>
-	// import '@vonage/video-publisher/video-publisher.js';
-	// import '@vonage/video-subscriber/video-subscriber.js';
-	// import '@vonage/video-subscribers/video-subscribers.js';
-	// import '@vonage/screen-share/screen-share.js';
-	import '@lifelongdev/dwane-timer/dwane-timer.js';
-
+	import "@lifelongdev/dwane-timer/dwane-timer.js";
 </script>
 
-<script is:inline>
-
-	let settings = {};
-	let events = [];
-
-	function loadSettings(){
-		console.log("loadSettings!");
-	}
-	function loadEvents(){
-        console.log("loadEvents: ",events);
-        const eventsContainer = document.querySelector("#events-container");
-        eventsContainer.innerHTML = "";
-        events.sort((a, b) => a.timeInMs - b.timeInMs);
-        events.map(event => {
-			eventsContainer.innerHTML += `${event.title}
-			<br/><dwane-timer timer-deadline="${event.timeInMs}"></dwane-timer>
-			<a href="/guest/${event.timeInMs}">Join</a><br/><br/>`;
-        });
-	}
-
-	(async function() {
-		try {
-            // get settings file
-            const settingsResponse = await fetch(`/.netlify/functions/get_settings`);
-            settings = await settingsResponse.json();
-            console.log("settings: ", settings);
-            loadSettings();
-            events = settings.events;
-            console.log("events: ", events);
-            loadEvents();
-		} catch(error){
-            console.error(error);
-        }
-	})();
-</script>
+<style>
+main {
+	margin: auto;
+	width: 100%;
+	max-width: 500px;
+}
+section {
+	text-align: center;
+}
+</style>

@@ -23,7 +23,7 @@ events.sort((a, b) => a.timeInMs - b.timeInMs);
 							{event.description}
 						</details>
 						<a href=`/${event.timeInMs}`>Join</a>
-						<br />
+						<br /><br />
 					</div>
 				))
 			}
@@ -36,4 +36,9 @@ events.sort((a, b) => a.timeInMs - b.timeInMs);
 </script>
 
 <style>
+main {
+	margin: auto;
+	width: 100%;
+	max-width: 500px;
+}
 </style>

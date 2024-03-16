@@ -1,35 +1,41 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import Layout from "../../layouts/Layout.astro";
 
 const { timeInMs } = Astro.params;
-const response = await fetch(Astro.url.origin+'/.netlify/functions/get_settings');
+const response = await fetch(
+    Astro.url.origin + "/.netlify/functions/get_settings",
+);
 const data = await response.json();
-const eventData = data.events.filter(event => event.timeInMs == timeInMs);
+const eventData = data.events.filter((event) => event.timeInMs == timeInMs);
 if (eventData.length === 0) return Astro.redirect("/guest");
-// console.log("eventData: ", eventData);
 const applicationId = eventData[0].applicationId;
 const sessionId = eventData[0].sessionId;
 const conversationId = eventData[0].conversationId;
-
 ---
+
 <Layout title="Guest">
     <main>
-        <h1>Guest Dashboard</h1>
-        <section data-session-id={sessionId} data-application-id={applicationId} data-conversation-id={conversationId}>
+        <h1><a href={Astro.url.origin+"/guest"}> &lt;</a>Guest Dashboard</h1>
+        <section
+            data-session-id={sessionId}
+            data-application-id={applicationId}
+            data-conversation-id={conversationId}
+        >
             <div id="login">
-                <label for="name">Enter your name:</label><br/>
-                <input type="text" id="name" name="name" required><br/>
-                <label for="pass">Enter password:</label><br/>
-                <input type="password" id="pass" name="password" required><br/>
+                <label for="name">Enter your name:</label><br />
+                <input type="text" id="name" name="name" required /><br />
+                <label for="pass">Enter password:</label><br />
+                <input type="password" id="pass" name="password" required /><br
+                />
                 <button id="submit">submit</button>
                 <div id="status"></div>
             </div>
             <div id="dashboard">
                 <!-- <h1>guest dashboard</h1> -->
                 <section id="publisher-section">
-                    <inputs-select />
+                    <inputs-select></inputs-select>
                     <!-- <div id="publisher"></div> -->
-                    <br/><br/>
+                    <br /><br />
                     <!-- <div id="host-dashboard"></div> -->
                     <video-publisher auto-publish="false"></video-publisher>
                     <div id="controls">
@@ -38,7 +44,6 @@ const conversationId = eventData[0].conversationId;
                         <button id="cycle">cycle Video</button>
                     </div>
                     <screen-share></screen-share>
-    
                 </section>
                 <section id="subscribers-section">
                     <video-subscribers></video-subscribers>
@@ -50,242 +55,49 @@ const conversationId = eventData[0].conversationId;
                         <div id="chat-section">
                             <vc-messages></vc-messages>
                             <div>
-                                <vc-text-input typingTimeout="1500"></vc-text-input>
+                                <vc-text-input typingTimeout="1500"
+                                ></vc-text-input>
                                 <vc-typing-indicator></vc-typing-indicator>
-                            </div>          
+                            </div>
                         </div>
                     </div>
-              
                 </section>
 
                 <!-- <div id="guest-dashboard"></div>
                 <video-publisher></video-publisher>
                 <screen-share></screen-share>
                 <video-subscribers></video-subscribers> -->
-        
             </div>
         </section>
-
     </main>
     <template id="dashboard-template">
         <!-- <video-publisher width="300px" height="240px"></video-publisher>
         <screen-share start-text="start" stop-text="stop" width="300px" height="240px"></screen-share>
         <video-subscribers></video-subscribers> -->
     </template>
-
 </Layout>
 
-<script>
-    // import '@vonage/video-client@latest/dist/js/opentok.js';
-	import '@vonage/video-publisher/video-publisher.js';
-	// import '@vonage/video-subscriber/video-subscriber.js';
-	import '@vonage/video-subscribers/video-subscribers.js';
-	import '@vonage/screen-share/screen-share.js';
-    import '@vonage/inputs-select/inputs-select.js';
-
-    import '@vonage/vc-members/vc-members.js';
-    import '@vonage/vc-messages/vc-messages.js';
-    import '@vonage/vc-typing-indicator/vc-typing-indicator';
-    import '@vonage/vc-text-input/vc-text-input.js';
-
-	// import '@lifelongdev/dwane-timer/dwane-timer.js';
-
-</script>
-
-
-<script is:inline>
-    const sectionEl = document.querySelector("section");
-    const nameInput = document.querySelector("#name");
-    const passwordInput = document.querySelector("#pass");
-    const submitBtn = document.querySelector("#submit");
-
-    const vonageInput = document.querySelector("vc-text-input");
-    const vonageTypingIndicator = document.querySelector("vc-typing-indicator");
-    const vonageMembers = document.querySelector("vc-members");
-    const vonageMessagesFeed = document.querySelector("vc-messages");
-
-    const chatApplication = document.querySelector("#chat-application");
-    const chatLoading = document.querySelector("#chat-loading");
-
-
-
-
-    const applicationId = sectionEl.dataset.applicationId;
-    const sessionId = sectionEl.dataset.sessionId;
-    const conversationId = sectionEl.dataset.conversationId;
-
-
-    let client;
-    let app;
-    let conversation;
-
-
-    console.log("window.OT: ", window.OT);
-
-
-    // Example POST method implementation:
-    async function postData(url = "", data = {}) {
-        // Default options are marked with *
-        const response = await fetch(url, {
-            method: "POST", // *GET, POST, PUT, DELETE, etc.
-            // mode: "cors", // no-cors, *cors, same-origin
-            // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-            // credentials: "same-origin", // include, *same-origin, omit
-            headers: {
-                "Content-Type": "application/json",
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            redirect: "follow", // manual, *follow, error
-            referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-            body: JSON.stringify(data), // body data type must match "Content-Type" header
-        });
-        return response.json(); // parses JSON response into native JavaScript objects
-    }
-
-    async function loadDashboard(){
-        console.log("load dashboard!");
-        document.querySelector("#dashboard").style.display="flex";
-        try {
-            console.log("dashboard!");
-            // get tokens
-            const tokensResponse = await fetch('/.netlify/functions/generate_tokens',{
-                method: "POST",
-                headers: {
-                "Content-Type": "application/json",
-                // 'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: JSON.stringify({sessionId, role: "publisher"})
-            });
-            const tokensData = await tokensResponse.json();
-            console.log("tokensData: ", tokensData);
-            const { videoToken } = tokensData;
-
-            // Log into chat
-            const chatData = await postData(`/.netlify/functions/join_chat`, {name: nameInput.value, conversationId});
-            console.log("chatData: ", chatData);
-            const { chatToken } = chatData;
-            console.log("chatToken: ", chatToken);
-
-            client = new NexmoClient({debug:false});
-            app = await client.createSession(chatToken);
-            conversation = await app.getConversation(conversationId);
-
-            console.log("conversation: ", conversation);
-
-            vonageInput.conversation = conversation;
-            vonageTypingIndicator.conversation = conversation;
-            // vonageMembers.conversation = conversation;
-            vonageMessagesFeed.conversation = conversation;
-
-            chatLoading.style.display = "none";
-            chatApplication.style.display = "flex";
-
-
-
-            // Initialize an OpenTok Session object
-            const session = OT.initSession(applicationId, sessionId);
-            console.log("session: ", session);
-
-            // const guestDashboard = document.querySelector("#guest-dashboard");
-            // const dashboardTemplate = document.querySelector('#dashboard-template');
-            // const dashboardClone = dashboardTemplate.content.cloneNode(true);
-
-            // guestDashboard.appendChild(dashboardClone);
-
-
-            const videoPublisherEl = document.querySelector('video-publisher');
-            const videoSubscribersEl = document.querySelector('video-subscribers');
-            const screenShareEl = document.querySelector('screen-share');
-
-            const inputsSelectEl = document.querySelector('inputs-select');
-            const controlsDiv = document.querySelector('#controls');
-            const toggleVideoBtn = document.querySelector('#toggle-video');
-            const toggleAudioBtn = document.querySelector('#toggle-audio');
-            const cycleBtn = document.querySelector('#cycle');
-
-
-            // Set session and token for Web Components
-            videoPublisherEl.session = session;
-            videoPublisherEl.token = videoToken;
-
-            videoPublisherEl.properties = {width: "400px", height: "400px", name: nameInput.value}
-
-
-            videoSubscribersEl.properties = {width: "200px", height: "200px"}
-            videoSubscribersEl.session = session;
-            videoSubscribersEl.token = videoToken;
-
-            screenShareEl.session = session;
-            screenShareEl.token = videoToken;
-            screenShareEl.properties = {width: "320px", height: "240px", showControls: false}
-
-            inputsSelectEl.addEventListener('inputsSelected', (event)=> {
-                console.log("inputsSelected: ", event.detail);
-                // const videoPublisherEl = document.createElement("video-publisher");
-                // videoPublisherEl.setAttribute("id", `publisher`);
-                inputsSelectEl.style.display = "none";
-                videoPublisherEl.session = session;
-                videoPublisherEl.token = videoToken;
-                videoPublisherEl.properties = {width: "400px", height: "400px", name: nameInput.value, audioSource:event.detail.audioSource, videoSource:event.detail.videoSource};
-                videoPublisherEl.style.display = "block";
-                videoPublisherEl.startPublish();
-                videoPublisherEl.addEventListener("published",(event)=> {
-                    console.log("published: ", event.detail);
-                    videoPublisherEl.setAttribute("id", `${event.detail.publisher.stream.streamId}`);
-
-                });
-                controlsDiv.style.display = "block";
-                // publisherEl.appendChild(videoPublisherEl);
-            });
-
-            toggleVideoBtn.addEventListener('click', ()=> {
-                console.log("toggle video!");
-                videoPublisherEl.toggleVideo(); 
-            });
-            toggleAudioBtn.addEventListener('click', ()=> {
-                console.log("toggle audio!");
-                videoPublisherEl.toggleAudio(); 
-            });
-            cycleBtn.addEventListener('click', ()=> {
-                console.log("cycle video!");
-                videoPublisherEl.cycleVideo(); 
-            });
-
-            
-        } catch(error){
-            console.error(error);
-        }
-    }
-
-    async function submitPassword(){
-        if (passwordInput.value !== ""){
-            try {
-                console.log("sumbitPassword", passwordInput.value);
-                // status = "saving settings";
-                const dataToSend = {
-                    password: passwordInput.value,
-                    role: 'guest'
-                }
-                const loginResponse = await postData(`/.netlify/functions/check_password`, dataToSend);
-                // status = "settings saved successfully"
-                console.log("loginResponse: ", loginResponse);
-                if (loginResponse.authorized){
-                    document.querySelector("#login").style.display = "none";
-                    loadDashboard();
-                }
-            } catch (error) {
-                // status = error;
-            }
-
-        }
-    }
-
-    submitBtn.addEventListener('click', submitPassword, false);
-</script>
-
 <style>
+    #login {
+        display: grid;
+        place-items: center;
+        place-content: center;
+        height: 80dvh;
+    }
+    #dashboard {
+        display: none;
+        justify-content: center;
+    }
+
     #controls {
         display: none;
+    }
+
+    video-publisher,
+    screen-share {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        padding: 0;
     }
 
     video-subscribers {
@@ -305,18 +117,179 @@ const conversationId = eventData[0].conversationId;
         width: 100%;
     }
 
-
     vc-messages {
         height: 300px;
-    }
-
-    vc-members {
-        height: 300px;
-        width: 100%;
-        max-width: 200px;
     }
 
     vc-text-input {
         font-size: 20px;
     }
 </style>
+
+<script>
+    import "@vonage/video-publisher/video-publisher.js";
+    import "@vonage/video-subscribers/video-subscribers.js";
+    import "@vonage/screen-share/screen-share.js";
+    import "@vonage/inputs-select/inputs-select.js";
+    import "@vonage/vc-messages/vc-messages.js";
+    import "@vonage/vc-typing-indicator/vc-typing-indicator";
+    import "@vonage/vc-text-input/vc-text-input.js";
+</script>
+
+<script is:inline>
+const sectionEl = document.querySelector("section");
+const nameInput = document.querySelector("#name");
+const passwordInput = document.querySelector("#pass");
+const submitBtn = document.querySelector("#submit");
+const vonageInput = document.querySelector("vc-text-input");
+const vonageTypingIndicator = document.querySelector("vc-typing-indicator");
+const vonageMessagesFeed = document.querySelector("vc-messages");
+const chatApplication = document.querySelector("#chat-application");
+const chatLoading = document.querySelector("#chat-loading");
+const applicationId = sectionEl.dataset.applicationId;
+const sessionId = sectionEl.dataset.sessionId;
+const conversationId = sectionEl.dataset.conversationId;
+
+let client;
+let app;
+let conversation;
+
+// Example POST method implementation:
+async function postData(url = "", data = {}) {
+    // Default options are marked with *
+    const response = await fetch(url, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        // mode: "cors", // no-cors, *cors, same-origin
+        // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        // credentials: "same-origin", // include, *same-origin, omit
+        headers: {
+            "Content-Type": "application/json",
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: JSON.stringify(data), // body data type must match "Content-Type" header
+    });
+    return response.json(); // parses JSON response into native JavaScript objects
+}
+
+async function loadDashboard() {
+    document.querySelector("#dashboard").style.display = "flex";
+    try {
+        // get tokens
+        const tokensResponse = await fetch(
+            "/.netlify/functions/generate_tokens",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: JSON.stringify({ sessionId, role: "publisher" }),
+            },
+        );
+        const tokensData = await tokensResponse.json();
+        const { videoToken } = tokensData;
+
+        // Log into chat
+        const chatData = await postData(`/.netlify/functions/join_chat`, {
+            name: nameInput.value,
+            conversationId,
+        });
+        const { chatToken } = chatData;
+
+        client = new NexmoClient({ debug: false });
+        app = await client.createSession(chatToken);
+        conversation = await app.getConversation(conversationId);
+
+        vonageInput.conversation = conversation;
+        vonageTypingIndicator.conversation = conversation;
+        vonageMessagesFeed.conversation = conversation;
+
+        chatLoading.style.display = "none";
+        chatApplication.style.display = "flex";
+
+        // Initialize a Vonage Video Session object
+        const session = OT.initSession(applicationId, sessionId);
+
+        const videoPublisherEl = document.querySelector("video-publisher");
+        const videoSubscribersEl =
+            document.querySelector("video-subscribers");
+        const screenShareEl = document.querySelector("screen-share");
+        const inputsSelectEl = document.querySelector("inputs-select");
+        const controlsDiv = document.querySelector("#controls");
+        const toggleVideoBtn = document.querySelector("#toggle-video");
+        const toggleAudioBtn = document.querySelector("#toggle-audio");
+        const cycleBtn = document.querySelector("#cycle");
+
+        // Set session and token for Web Components
+
+        videoSubscribersEl.properties = { width: "200px", height: "200px" };
+        videoSubscribersEl.session = session;
+        videoSubscribersEl.token = videoToken;
+
+        screenShareEl.session = session;
+        screenShareEl.token = videoToken;
+        screenShareEl.properties = {
+            width: "100%",
+            showControls: false,
+        };
+
+        inputsSelectEl.addEventListener("inputsSelected", (event) => {
+            inputsSelectEl.style.display = "none";
+            videoPublisherEl.session = session;
+            videoPublisherEl.token = videoToken;
+            videoPublisherEl.properties = {
+                width: "100%",
+                name: nameInput.value,
+                audioSource: event.detail.audioSource,
+                videoSource: event.detail.videoSource,
+            };
+            videoPublisherEl.style.display = "block";
+            videoPublisherEl.startPublish();
+            videoPublisherEl.addEventListener("published", (event) => {
+                videoPublisherEl.setAttribute(
+                    "id",
+                    `${event.detail.publisher.stream.streamId}`,
+                );
+            });
+            controlsDiv.style.display = "block";
+        });
+
+        toggleVideoBtn.addEventListener("click", () => {
+            videoPublisherEl.toggleVideo();
+        });
+        toggleAudioBtn.addEventListener("click", () => {
+            videoPublisherEl.toggleAudio();
+        });
+        cycleBtn.addEventListener("click", () => {
+            videoPublisherEl.cycleVideo();
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function submitPassword() {
+    if (passwordInput.value !== "") {
+        try {
+            const dataToSend = {
+                password: passwordInput.value,
+                role: "guest",
+            };
+            const loginResponse = await postData(
+                `/.netlify/functions/check_password`,
+                dataToSend,
+            );
+            if (loginResponse.authorized) {
+                document.querySelector("#login").style.display = "none";
+                loadDashboard();
+            }
+        } catch (error) {
+            console.error("Error logging in: ", error);
+        }
+    }
+}
+
+submitBtn.addEventListener("click", submitPassword, false);
+</script>
