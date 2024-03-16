@@ -1,4 +1,4 @@
-Hey. I'm Dwane ([LifeLong.dev](https://lifelong.dev)) and I like to build side projects. One of them is a site where I was streaming local developer/tech group events ([otech.events](https://otech.events)). I figured it would be great if the groups could live stream their own events just incase I was not able to make it.
+Hey. I'm Dwane ([LifeLong.dev](https://lifelong.dev)) and I like to build side projects. One of them is a site where I was streaming local developer/tech group events ([otech.events](https://otech.events)). I figured it would be great if the groups or anyone else could live stream their own events just incase I was not able to make it.
 
 So here it is. A less complex version of my project that is easier to get up and running.
 
@@ -101,6 +101,57 @@ RTMP_YOUTUBE_URL=
 ### Congrats!!!
 
 - That's it! You should be able to add events in the admin dashboard and livestream them and get recordings at the end.
+
+# How it works
+
+I have intentionally not add much styling to the application. I didn't want for a person to have to undo my choices just to get the application to look how they want.
+
+## Roles
+
+- Admin: creates/deletes events and can view/download available archives
+- Host: during event can switch between scenes, select what camera is shown, share their screen, start/stop archiving, and chat with viewers. When the event is over, they will get a link to download the archive.
+- Guest: during event can share their screen and chat with viewers.
+- Viewer: can watch the event and chat with host, guest and other viewers.
+
+
+## File structure
+
+```text
+/
+├── netlify/functions (all the Netlify server functions for things like generating credentials)
+├── public/
+│   ├── favicon.svg
+│   ├── favicon.ico
+├── src/
+│   ├── components/
+│   │   └── Card.astro (Not used in app, but I left if you'd like to see an example )
+│   ├── layouts/
+│   │   └── Layout.astro (wrapper around all the individual pages)
+│   └── pages/
+│       ├── ec/
+│       │   └── [timeInMs].astro (Experience Composer uses this page record the event and broadcast)
+│       ├── guest/
+│       │   ├── [timeInMs].astro (guest dashboard for event)
+│       │   ├── index.astro (list of events for guest to join)
+│       ├── host/
+│       │   ├── [timeInMs].astro (host dashboard for event)
+│       │   ├── index.astro (list of events for host to join)
+│       ├── [timeInMs].astro (event page to watch stream)
+│       ├── admin.astro (admin dashboard to add/delete events, view available archives and more)
+│       ├── index.astro (main page that lists events)
+├── package.json
+└── site-settings.json (where event data is stored)
+```
+
+
+
+# Powered with Vonage
+
+The application communication features (video and chat) are using Vonage [Video](https://developer.vonage.com/en/video/overview) and [Conversation](https://developer.vonage.com/en/conversation/overview) APIs with the [Node SDK](https://github.com/vonage/vonage-node-sdk). On the frontend, it is using the [Video](https://developer.vonage.com/en/video/client-sdks/web/overview) and [Chat](https://developer.vonage.com/en/vonage-client-sdk/overview) JavaScript Client SDKs.
+
+The UI is created with the [Video API](https://github.com/Vonage-Community/web_components-video_api-javascript) and [Conversation API](https://github.com/nexmo-community/clientsdk-ui-js/) Web Components.
+
+Vonage also handles the [Broadcasting](https://developer.vonage.com/en/video/guides/broadcast/overview?source=video) to other sites and [Archiving](https://developer.vonage.com/en/video/guides/archiving/overview?source=video) the events using [Experience Composer](https://developer.vonage.com/en/video/guides/experience_composer?source=video).
 
 # Hosted with Netlify
 
