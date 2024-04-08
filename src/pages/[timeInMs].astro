@@ -292,25 +292,31 @@ function initializeVonage() {
             );
             const { chatToken } = chatData;
 
-            client = new NexmoClient({ debug: false });
-            app = await client.createSession(chatToken);
-            const conversation = await app.getConversation(conversationId);
+            const client = new vonageClientSDK.VonageClient();
+            try {
+                await client.createSession(chatToken);
+                vonageInput.client = client;
+                vonageInput.conversationId = conversationId;
+                vonageTypingIndicator.client = client;
+                vonageTypingIndicator.conversationId = conversationId;
+                vonageMessagesFeed.client = client;
+                vonageMessagesFeed.conversationId = conversationId;
 
-            vonageInput.conversation = conversation;
-            vonageTypingIndicator.conversation = conversation;
-            vonageMessagesFeed.conversation = conversation;
+                chatLogin.style.display = "none";
+                chatApplication.style.display = "flex";
 
-            chatLogin.style.display = "none";
-            chatApplication.style.display = "flex";
+                // allows enter button to send chat messages
+                const vonageInputEl =
+                    vonageInput.shadowRoot.querySelector("#text");
+                vonageInputEl.addEventListener("keydown", (e) => {
+                    if (e.code === "Enter") {
+                        vonageInput.__handleClickEvent();
+                    }
+                });
 
-            // allows enter button to send chat messages
-            const vonageInputEl =
-                vonageInput.shadowRoot.querySelector("#text");
-            vonageInputEl.addEventListener("keydown", (e) => {
-                if (e.code === "Enter") {
-                    vonageInput.__handleClickEvent();
-                }
-            });
+            } catch (error) {
+                console.error("Error starting chat: ", error)
+            }
         }
     });
 }

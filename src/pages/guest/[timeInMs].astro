@@ -70,11 +70,6 @@ const conversationId = eventData[0].conversationId;
             </div>
         </section>
     </main>
-    <template id="dashboard-template">
-        <!-- <video-publisher width="300px" height="240px"></video-publisher>
-        <screen-share start-text="start" stop-text="stop" width="300px" height="240px"></screen-share>
-        <video-subscribers></video-subscribers> -->
-    </template>
 </Layout>
 
 <style>
@@ -202,13 +197,14 @@ async function loadDashboard() {
         });
         const { chatToken } = chatData;
 
-        client = new NexmoClient({ debug: false });
-        app = await client.createSession(chatToken);
-        conversation = await app.getConversation(conversationId);
-
-        vonageInput.conversation = conversation;
-        vonageTypingIndicator.conversation = conversation;
-        vonageMessagesFeed.conversation = conversation;
+        const client = new vonageClientSDK.VonageClient();
+        await client.createSession(chatToken);
+        vonageInput.client = client;
+        vonageInput.conversationId = conversationId;
+        vonageTypingIndicator.client = client;
+        vonageTypingIndicator.conversationId = conversationId;
+        vonageMessagesFeed.client = client;
+        vonageMessagesFeed.conversationId = conversationId;
 
         chatLoading.style.display = "none";
         chatApplication.style.display = "flex";

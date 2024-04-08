@@ -316,13 +316,14 @@ async function loadDashboard() {
         });
         const { chatToken } = chatData;
 
-        client = new NexmoClient({ debug: false });
-        app = await client.createSession(chatToken);
-        conversation = await app.getConversation(conversationId);
-
-        vonageInput.conversation = conversation;
-        vonageTypingIndicator.conversation = conversation;
-        vonageMessagesFeed.conversation = conversation;
+        const client = new vonageClientSDK.VonageClient();
+        await client.createSession(chatToken);
+        vonageInput.client = client;
+        vonageInput.conversationId = conversationId;
+        vonageTypingIndicator.client = client;
+        vonageTypingIndicator.conversationId = conversationId;
+        vonageMessagesFeed.client = client;
+        vonageMessagesFeed.conversationId = conversationId;
 
         chatLoading.style.display = "none";
         chatApplication.style.display = "flex";
