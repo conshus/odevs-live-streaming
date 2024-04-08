@@ -327,6 +327,16 @@ async function loadDashboard() {
         chatLoading.style.display = "none";
         chatApplication.style.display = "flex";
 
+        // allows enter button to send chat messages
+        const vonageInputEl =
+            vonageInput.shadowRoot.querySelector("#text");
+        vonageInputEl.addEventListener("keydown", (e) => {
+            if (e.code === "Enter") {
+                vonageInput.__handleClickEvent();
+            }
+        });
+
+
         // Initialize a Vonage Video Session object
         session = OT.initSession(applicationId, sessionId);
 
