@@ -196,7 +196,6 @@ async function loadDashboard() {
             conversationId,
         });
         const { chatToken } = chatData;
-
         const client = new vonageClientSDK.VonageClient();
         await client.createSession(chatToken);
         vonageInput.client = client;
