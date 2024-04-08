@@ -31,12 +31,9 @@ const conversationId = eventData[0].conversationId;
                 <div id="status"></div>
             </div>
             <div id="dashboard">
-                <!-- <h1>guest dashboard</h1> -->
                 <section id="publisher-section">
                     <inputs-select></inputs-select>
-                    <!-- <div id="publisher"></div> -->
                     <br /><br />
-                    <!-- <div id="host-dashboard"></div> -->
                     <video-publisher auto-publish="false"></video-publisher>
                     <div id="controls">
                         <button id="toggle-video">toggle Video</button>
@@ -62,19 +59,9 @@ const conversationId = eventData[0].conversationId;
                         </div>
                     </div>
                 </section>
-
-                <!-- <div id="guest-dashboard"></div>
-                <video-publisher></video-publisher>
-                <screen-share></screen-share>
-                <video-subscribers></video-subscribers> -->
             </div>
         </section>
     </main>
-    <template id="dashboard-template">
-        <!-- <video-publisher width="300px" height="240px"></video-publisher>
-        <screen-share start-text="start" stop-text="stop" width="300px" height="240px"></screen-share>
-        <video-subscribers></video-subscribers> -->
-    </template>
 </Layout>
 
 <style>
@@ -136,7 +123,7 @@ const conversationId = eventData[0].conversationId;
     import "@vonage/screen-share/screen-share.js";
     import "@vonage/inputs-select/inputs-select.js";
     import "@vonage/vc-messages/vc-messages.js";
-    import "@vonage/vc-typing-indicator/vc-typing-indicator";
+    import "@vonage/vc-typing-indicator/vc-typing-indicator.js";
     import "@vonage/vc-text-input/vc-text-input.js";
 </script>
 
@@ -201,17 +188,27 @@ async function loadDashboard() {
             conversationId,
         });
         const { chatToken } = chatData;
-
-        client = new NexmoClient({ debug: false });
-        app = await client.createSession(chatToken);
-        conversation = await app.getConversation(conversationId);
-
-        vonageInput.conversation = conversation;
-        vonageTypingIndicator.conversation = conversation;
-        vonageMessagesFeed.conversation = conversation;
+        const client = new vonageClientSDK.VonageClient();
+        await client.createSession(chatToken);
+        vonageInput.client = client;
+        vonageInput.conversationId = conversationId;
+        vonageTypingIndicator.client = client;
+        vonageTypingIndicator.conversationId = conversationId;
+        vonageMessagesFeed.client = client;
+        vonageMessagesFeed.conversationId = conversationId;
 
         chatLoading.style.display = "none";
         chatApplication.style.display = "flex";
+
+        // allows enter button to send chat messages
+        const vonageInputEl =
+            vonageInput.shadowRoot.querySelector("#text");
+        vonageInputEl.addEventListener("keydown", (e) => {
+            if (e.code === "Enter") {
+                vonageInput.__handleClickEvent();
+            }
+        });
+
 
         // Initialize a Vonage Video Session object
         const session = OT.initSession(applicationId, sessionId);

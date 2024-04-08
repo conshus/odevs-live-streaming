@@ -149,7 +149,7 @@ I have intentionally not add much styling to the application. I didn't want for 
 
 The application communication features (video and chat) are using Vonage [Video](https://developer.vonage.com/en/video/overview) and [Conversation](https://developer.vonage.com/en/conversation/overview) APIs with the [Node SDK](https://github.com/vonage/vonage-node-sdk). On the frontend, it is using the [Video](https://developer.vonage.com/en/video/client-sdks/web/overview) and [Chat](https://developer.vonage.com/en/vonage-client-sdk/overview) JavaScript Client SDKs.
 
-The UI is created with the [Video API](https://github.com/Vonage-Community/web_components-video_api-javascript) and [Conversation API](https://github.com/nexmo-community/clientsdk-ui-js/) Web Components.
+The UI is created with the Vonage [Video API](https://github.com/Vonage-Community/web_components-video_api-javascript) and [Chat SDK](https://github.com/Vonage-Community/web_components-chat_sdk-javascript) Web Components.
 
 Vonage also handles the [Broadcasting](https://developer.vonage.com/en/video/guides/broadcast/overview?source=video) to other sites and [Archiving](https://developer.vonage.com/en/video/guides/archiving/overview?source=video) the events using [Experience Composer](https://developer.vonage.com/en/video/guides/experience_composer?source=video).
 
