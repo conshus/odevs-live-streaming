@@ -31,12 +31,9 @@ const conversationId = eventData[0].conversationId;
                 <div id="status"></div>
             </div>
             <div id="dashboard">
-                <!-- <h1>guest dashboard</h1> -->
                 <section id="publisher-section">
                     <inputs-select></inputs-select>
-                    <!-- <div id="publisher"></div> -->
                     <br /><br />
-                    <!-- <div id="host-dashboard"></div> -->
                     <video-publisher auto-publish="false"></video-publisher>
                     <div id="controls">
                         <button id="toggle-video">toggle Video</button>
@@ -62,11 +59,6 @@ const conversationId = eventData[0].conversationId;
                         </div>
                     </div>
                 </section>
-
-                <!-- <div id="guest-dashboard"></div>
-                <video-publisher></video-publisher>
-                <screen-share></screen-share>
-                <video-subscribers></video-subscribers> -->
             </div>
         </section>
     </main>
@@ -131,7 +123,7 @@ const conversationId = eventData[0].conversationId;
     import "@vonage/screen-share/screen-share.js";
     import "@vonage/inputs-select/inputs-select.js";
     import "@vonage/vc-messages/vc-messages.js";
-    import "@vonage/vc-typing-indicator/vc-typing-indicator";
+    import "@vonage/vc-typing-indicator/vc-typing-indicator.js";
     import "@vonage/vc-text-input/vc-text-input.js";
 </script>
 
