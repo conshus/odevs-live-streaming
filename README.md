@@ -54,7 +54,7 @@ So here it is. A less complex version of my project that is easier to get up and
 ADMIN_PASSWORD=
 GITHUB_PAT=
 GUEST_PASSWORD=
-HOST_PASSWORDT=
+HOST_PASSWORD=
 NETLIFY_PAT=
 VONAGE_APP_ID=
 VONAGE_PRIVATE_KEY64=
