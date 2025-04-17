@@ -97,6 +97,54 @@ const { videoToken } = tokensData;
     vc-messages {
         height: 300px;
     }
+
+    vc-messages::part(message) {
+        padding: 15px;
+        margin: 5px;
+    }
+
+    vc-messages::part(message mine) {
+        text-align: right;
+    }
+
+    vc-messages::part(message-text) {
+        border-radius: 6px;
+        background-color: #f0f0f0;
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 6px 6px 6px 0;
+        font-size: 1.4rem;
+    }
+
+    vc-messages::part(message-text mine) {
+        background-color: #e0e0ff;
+        border-radius: 6px 6px 0px 6px;
+    }
+
+    vc-messages::part(message-image) {
+        background-color: #f0f0f0;
+        display: inline-block;
+        padding: 8px;
+        border-radius: 6px 6px 6px 0;
+        font-size: 1.4rem;
+        width: 100%;
+        max-width: 250px;
+    }
+
+    vc-messages::part(message-image mine) {
+        background-color: #e0e0ff;
+        border-radius: 6px 6px 0px 6px;
+    }
+
+    vc-messages::part(username) {
+        font-size: 1.2rem;
+    }
+
+    vc-messages::part(username mine) {
+        text-align: right;
+        color: black;
+    }
+
     vc-text-input {
         font-size: 20px;
     }
